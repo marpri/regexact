@@ -13,12 +13,12 @@ export class RegExact {
     this.regExact = new RegExp(this.ast.toPattern(), regexp.flags);
   }
 
-  public exec(input: string): IRegExactExecArray {
+  public exec(input: string, optimization: boolean = true): IRegExactExecArray {
     const execValue = this.regExact.exec(input);
     const exactExecValue = execValue as IRegExactExecArray;
     if (exactExecValue) {
       exactExecValue.indexes = [];
-      this.ast.fixResult(exactExecValue);
+      this.ast.fixResult(exactExecValue, optimization);
     }
 
     return exactExecValue;

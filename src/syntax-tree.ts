@@ -29,6 +29,9 @@ class FixResultState {
 export class SyntaxTree {
   public type: string;
   protected children: SyntaxTree[];
+  protected containsReference: boolean = false;
+  protected containsCapturingGroup: boolean = false;
+  protected virtualCapturingGroupsCount = 0;
   constructor() {
     this.type = (this as any).__proto__.constructor.name;
     this.children = [];
@@ -41,8 +44,20 @@ export class SyntaxTree {
 
   public fixResult(
     _xExecValue: IRegExactExecArray, // tslint:disable-line: variable-name
-    _fixResultState: FixResultState // tslint:disable-line: variable-name
+    _optimization: boolean, // tslint:disable-line: variable-name
+    _fixResultState: FixResultState, // tslint:disable-line: variable-name
   ) {} // tslint:disable-line: no-empty
+
+  protected manageChild(child: SyntaxTree) {
+    this.children.push(child);
+    if (child.containsReference) {
+      this.containsReference = true;
+    }
+    if (child.containsCapturingGroup) {
+      this.containsCapturingGroup = true;
+    }
+    this.virtualCapturingGroupsCount += child.virtualCapturingGroupsCount;
+  }
 }
 
 // tslint:disable-next-line: max-classes-per-file
@@ -51,10 +66,10 @@ class Disjunction extends SyntaxTree {
     super();
 
     // construct ...
-    this.children.push(new Alternative(patternState, nodesMapper));
+    this.manageChild(new Alternative(patternState, nodesMapper));
     if (patternState.get() === '|') {
       patternState.cursor++; // consume alternation operator '|'
-      this.children.push(new Disjunction(patternState, nodesMapper));
+      this.manageChild(new Disjunction(patternState, nodesMapper));
     }
 
     assert.strictEqual(patternState.get(), ')');
@@ -80,13 +95,19 @@ class Disjunction extends SyntaxTree {
 
   public fixResult(
     xExecValue: IRegExactExecArray,
-    fixResultState: FixResultState
+    optimization: boolean,
+    fixResultState: FixResultState,
   ) {
     // manage children and siblings
     const cursorStart = fixResultState.cursor;
     for (const child of this.children) {
-      fixResultState.cursor = cursorStart;
-      child.fixResult(xExecValue, fixResultState);
+      if (!optimization || this.containsCapturingGroup || this.containsReference) {
+        fixResultState.cursor = cursorStart;
+        child.fixResult(xExecValue, optimization, fixResultState);
+      }
+      else {
+        xExecValue.splice(fixResultState.index, this.virtualCapturingGroupsCount);
+      }
     }
   }
 }
@@ -98,13 +119,13 @@ class Alternative extends SyntaxTree {
 
     // construct ...
     if (patternState.get() === '(') {
-      this.children.push(new QuantifiedGroup(patternState, nodesMapper));
+      this.manageChild(new QuantifiedGroup(patternState, nodesMapper));
     } else {
-      this.children.push(new Simple(patternState, nodesMapper));
+      this.manageChild(new Simple(patternState, nodesMapper));
     }
 
     if (patternState.isNotEqual(')') && patternState.isNotEqual('|')) {
-      this.children.push(new Alternative(patternState, nodesMapper));
+      this.manageChild(new Alternative(patternState, nodesMapper));
     }
   }
 
@@ -118,11 +139,17 @@ class Alternative extends SyntaxTree {
 
   public fixResult(
     xExecValue: IRegExactExecArray,
-    fixResultState: FixResultState
+    optimization: boolean,
+    fixResultState: FixResultState,
   ) {
     // manage children and siblings
     for (const child of this.children) {
-      child.fixResult(xExecValue, fixResultState);
+      if (!optimization || this.containsCapturingGroup || this.containsReference) {
+        child.fixResult(xExecValue, optimization, fixResultState);
+      }
+      else {
+        xExecValue.splice(fixResultState.index, this.virtualCapturingGroupsCount);
+      }
     }
   }
 }
@@ -131,7 +158,9 @@ class Alternative extends SyntaxTree {
 class Simple extends SyntaxTree {
   constructor(patternState: PatternState, nodesMapper: GroupsMapper) {
     super();
+
     nodesMapper.xIndex++;
+    this.virtualCapturingGroupsCount += 1;
 
     // construct ...
     const referenceMatch = patternState.pattern
@@ -139,10 +168,10 @@ class Simple extends SyntaxTree {
       .match(/^\\[1-9][0-9]*/);
     if (referenceMatch) {
       const reference = referenceMatch[0];
-      this.children.push(new Reference(referenceMatch[0]));
+      this.manageChild(new Reference(referenceMatch[0]));
       patternState.cursor += reference.length;
     } else {
-      this.children.push(new Text(patternState));
+      this.manageChild(new Text(patternState));
     }
 
     if (
@@ -150,7 +179,7 @@ class Simple extends SyntaxTree {
       patternState.isNotEqual(')') &&
       patternState.isNotEqual('|')
     ) {
-      this.children.push(new Simple(patternState, nodesMapper));
+      this.manageChild(new Simple(patternState, nodesMapper));
     }
   }
 
@@ -164,12 +193,13 @@ class Simple extends SyntaxTree {
 
   public fixResult(
     xExecValue: IRegExactExecArray,
-    fixResultState: FixResultState
+    optimization: boolean,
+    fixResultState: FixResultState,
   ) {
     // manage group
     const groupText =
       xExecValue[fixResultState.index] !== undefined &&
-      xExecValue[fixResultState.index] !== null
+        xExecValue[fixResultState.index] !== null
         ? xExecValue[fixResultState.index]
         : '';
     xExecValue.splice(fixResultState.index, 1);
@@ -177,7 +207,7 @@ class Simple extends SyntaxTree {
     // manage children and siblings
     const rightSiblingCursor = fixResultState.cursor + groupText.length;
     for (const child of this.children) {
-      child.fixResult(xExecValue, fixResultState);
+      child.fixResult(xExecValue, optimization, fixResultState);
     }
     fixResultState.cursor = rightSiblingCursor; // correct for right sibling
   }
@@ -235,6 +265,7 @@ class Reference extends SyntaxTree {
     super();
 
     this.referenceText = referenceText;
+    this.containsReference = true;
   }
 
   public toPattern(nodesMapper: GroupsMapper): string {
@@ -255,7 +286,10 @@ class QuantifiedGroup extends SyntaxTree {
   private groupType: string;
   constructor(patternState: PatternState, nodesMapper: GroupsMapper) {
     super();
-    nodesMapper.xIndex += 2; // quantified group has 2 pairs of paretheses
+
+    // quantified group has 2 pairs of paretheses
+    nodesMapper.xIndex += 2;
+    this.virtualCapturingGroupsCount += 2;
 
     // construct ...
     patternState.cursor++; // consume the opening parenthesis
@@ -269,11 +303,12 @@ class QuantifiedGroup extends SyntaxTree {
 
     if (this.groupType.length === 0) {
       // capturing group
+      this.containsCapturingGroup = true;
       nodesMapper.index += 1;
       nodesMapper.indexToXindex.set(nodesMapper.index, nodesMapper.xIndex); // set node mapper
     }
 
-    this.children.push(new Disjunction(patternState, nodesMapper));
+    this.manageChild(new Disjunction(patternState, nodesMapper));
     patternState.cursor++; // consume the closing parenthesis
 
     const quantifierMatch = patternState.pattern
@@ -299,12 +334,13 @@ class QuantifiedGroup extends SyntaxTree {
 
   public fixResult(
     xExecValue: IRegExactExecArray,
-    fixResultState: FixResultState
+    optimization: boolean,
+    fixResultState: FixResultState,
   ) {
     // manage quantified group
     const quantifiedGroupText =
       xExecValue[fixResultState.index] !== undefined &&
-      xExecValue[fixResultState.index] !== null
+        xExecValue[fixResultState.index] !== null
         ? xExecValue[fixResultState.index]
         : '';
     xExecValue.splice(fixResultState.index, 1);
@@ -317,8 +353,8 @@ class QuantifiedGroup extends SyntaxTree {
       xExecValue[fixResultState.index] === undefined
         ? undefined
         : fixResultState.cursor +
-          quantifiedGroupText.length -
-          capturingGroupTextLength;
+        quantifiedGroupText.length -
+        capturingGroupTextLength;
 
     if (this.groupType === '') {
       // regular capturing group
@@ -333,7 +369,7 @@ class QuantifiedGroup extends SyntaxTree {
       fixResultState.cursor + quantifiedGroupText.length;
     fixResultState.cursor +=
       quantifiedGroupText.length - capturingGroupTextLength;
-    this.children[0].fixResult(xExecValue, fixResultState);
+    this.children[0].fixResult(xExecValue, optimization, fixResultState);
     fixResultState.cursor = rightSiblingCursor; // correct for right sibling
   }
 }
@@ -357,8 +393,11 @@ export class Root extends QuantifiedGroup {
     // return this.children[0].toPattern(this.nodesMapper);
   }
 
-  public fixResult(xExecValue: IRegExactExecArray) {
+  public fixResult(
+    xExecValue: IRegExactExecArray,
+    optimization: boolean,
+  ) {
     xExecValue.splice(0, 1); // remove overall result as root group represents overall result and is going to be proccessed next
-    super.fixResult(xExecValue, new FixResultState(0, xExecValue.index));
+    super.fixResult(xExecValue, optimization, new FixResultState(0, xExecValue.index));
   }
 }
