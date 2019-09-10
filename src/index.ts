@@ -1,1 +1,1 @@
-export * from './regexact';
+export * from "./regexact";

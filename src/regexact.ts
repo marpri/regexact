@@ -1,4 +1,4 @@
-import * as ast from './syntax-tree';
+import * as ast from "./syntax-tree";
 
 export interface IRegExactExecArray extends RegExpExecArray {
   indexes: Array<number | undefined>;

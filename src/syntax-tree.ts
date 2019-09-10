@@ -1,5 +1,5 @@
-import * as assert from 'assert';
-import { IRegExactExecArray } from './regexact';
+import * as assert from "assert";
+import { IRegExactExecArray } from "./regexact";
 
 // tslint:disable-next-line: max-classes-per-file
 class PatternState {
@@ -39,7 +39,7 @@ export class SyntaxTree {
 
   // tslint:disable-next-line: variable-name
   public toPattern(_nodesMapper: GroupsMapper): string {
-    return '';
+    return "";
   }
 
   public fixResult(
@@ -67,29 +67,29 @@ class Disjunction extends SyntaxTree {
 
     // construct ...
     this.manageChild(new Alternative(patternState, nodesMapper));
-    if (patternState.get() === '|') {
-      patternState.cursor++; // consume alternation operator '|'
+    if (patternState.get() === "|") {
+      patternState.cursor++; // consume alternation operator "|"
       this.manageChild(new Disjunction(patternState, nodesMapper));
     }
 
-    assert.strictEqual(patternState.get(), ')');
+    assert.strictEqual(patternState.get(), ")");
   }
 
   public toPattern(nodesMapper: GroupsMapper): string {
     switch (this.children.length) {
       case 0:
-        return '';
+        return "";
       case 1:
         return this.children[0].toPattern(nodesMapper);
       case 2:
         return (
           this.children[0].toPattern(nodesMapper) +
-          '|' +
+          "|" +
           this.children[1].toPattern(nodesMapper)
         );
       default:
-        assert.fail(new Error('Node has more than 2 children'));
-        return '';
+        assert.fail(new Error("Node has more than 2 children"));
+        return "";
     }
   }
 
@@ -104,8 +104,7 @@ class Disjunction extends SyntaxTree {
       if (!optimization || this.containsCapturingGroup || this.containsReference) {
         fixResultState.cursor = cursorStart;
         child.fixResult(xExecValue, optimization, fixResultState);
-      }
-      else {
+      } else {
         xExecValue.splice(fixResultState.index, this.virtualCapturingGroupsCount);
       }
     }
@@ -118,19 +117,19 @@ class Alternative extends SyntaxTree {
     super();
 
     // construct ...
-    if (patternState.get() === '(') {
+    if (patternState.get() === "(") {
       this.manageChild(new QuantifiedGroup(patternState, nodesMapper));
     } else {
       this.manageChild(new Simple(patternState, nodesMapper));
     }
 
-    if (patternState.isNotEqual(')') && patternState.isNotEqual('|')) {
+    if (patternState.isNotEqual(")") && patternState.isNotEqual("|")) {
       this.manageChild(new Alternative(patternState, nodesMapper));
     }
   }
 
   public toPattern(nodesMapper: GroupsMapper): string {
-    let toPattern = '';
+    let toPattern = "";
     for (const child of this.children) {
       toPattern = toPattern + child.toPattern(nodesMapper);
     }
@@ -146,8 +145,7 @@ class Alternative extends SyntaxTree {
     for (const child of this.children) {
       if (!optimization || this.containsCapturingGroup || this.containsReference) {
         child.fixResult(xExecValue, optimization, fixResultState);
-      }
-      else {
+      } else {
         xExecValue.splice(fixResultState.index, this.virtualCapturingGroupsCount);
       }
     }
@@ -175,20 +173,20 @@ class Simple extends SyntaxTree {
     }
 
     if (
-      patternState.isNotEqual('(') &&
-      patternState.isNotEqual(')') &&
-      patternState.isNotEqual('|')
+      patternState.isNotEqual("(") &&
+      patternState.isNotEqual(")") &&
+      patternState.isNotEqual("|")
     ) {
       this.manageChild(new Simple(patternState, nodesMapper));
     }
   }
 
   public toPattern(nodesMapper: GroupsMapper): string {
-    let toPattern = '';
+    let toPattern = "";
     for (const child of this.children) {
       toPattern = toPattern + child.toPattern(nodesMapper);
     }
-    return '(' + toPattern + ')';
+    return "(" + toPattern + ")";
   }
 
   public fixResult(
@@ -201,7 +199,7 @@ class Simple extends SyntaxTree {
       xExecValue[fixResultState.index] !== undefined &&
         xExecValue[fixResultState.index] !== null
         ? xExecValue[fixResultState.index]
-        : '';
+        : "";
     xExecValue.splice(fixResultState.index, 1);
 
     // manage children and siblings
@@ -229,7 +227,7 @@ class Text extends SyntaxTree {
 
       switch (patternState.get()) {
         // @ts-ignore : tslint:disable-nextLine:no-switch-case-fall-through // TODO: hope they will fix this
-        case '\\':
+        case "\\":
           if (
             !patternState.pattern
               .substr(patternState.cursor)
@@ -239,17 +237,17 @@ class Text extends SyntaxTree {
             break;
           }
         // falls through
-        case '(':
-        case ')':
-        case '|':
+        case "(":
+        case ")":
+        case "|":
           this.expression = patternState.pattern.substring(
             cursorStart,
-            patternState.cursor
+            patternState.cursor,
           );
           return;
       }
     }
-    throw new Error('Missing ) or |.');
+    throw new Error("Missing ) or |.");
   }
 
   // tslint:disable-next-line: variable-name
@@ -270,10 +268,10 @@ class Reference extends SyntaxTree {
 
   public toPattern(nodesMapper: GroupsMapper): string {
     const xReference = nodesMapper.indexToXindex.get(
-      Number(this.referenceText.substr(1))
+      Number(this.referenceText.substr(1)),
     );
     if (xReference) {
-      return '\\' + xReference.toString();
+      return "\\" + xReference.toString();
     } else {
       return this.referenceText;
     }
@@ -298,7 +296,7 @@ class QuantifiedGroup extends SyntaxTree {
     const groupTypeMatch = patternState.pattern
       .substr(patternState.cursor)
       .match(/^\?(:|<{0,1}[=!])/);
-    this.groupType = groupTypeMatch ? groupTypeMatch[0] : '';
+    this.groupType = groupTypeMatch ? groupTypeMatch[0] : "";
     patternState.cursor += this.groupType.length;
 
     if (this.groupType.length === 0) {
@@ -314,7 +312,7 @@ class QuantifiedGroup extends SyntaxTree {
     const quantifierMatch = patternState.pattern
       .substr(patternState.cursor)
       .match(/^(?:[\*\+\?]\??|{\d+}\??|{\d+,\d*}\??)/);
-    this.quantifier = quantifierMatch ? quantifierMatch[0] : '';
+    this.quantifier = quantifierMatch ? quantifierMatch[0] : "";
     patternState.cursor += this.quantifier.length;
 
     return;
@@ -322,13 +320,13 @@ class QuantifiedGroup extends SyntaxTree {
 
   public toPattern(nodesMapper: GroupsMapper): string {
     return (
-      '(' +
-      '(' +
+      "(" +
+      "(" +
       this.groupType +
       this.children[0].toPattern(nodesMapper) +
-      ')' +
+      ")" +
       this.quantifier +
-      ')'
+      ")"
     ); // TODO: optimization: remove one parentheses pair if quantifier is empty
   }
 
@@ -342,7 +340,7 @@ class QuantifiedGroup extends SyntaxTree {
       xExecValue[fixResultState.index] !== undefined &&
         xExecValue[fixResultState.index] !== null
         ? xExecValue[fixResultState.index]
-        : '';
+        : "";
     xExecValue.splice(fixResultState.index, 1);
 
     const capturingGroupTextLength =
@@ -356,7 +354,7 @@ class QuantifiedGroup extends SyntaxTree {
         quantifiedGroupText.length -
         capturingGroupTextLength;
 
-    if (this.groupType === '') {
+    if (this.groupType === "") {
       // regular capturing group
       xExecValue.indexes.push(capturingGroupIndex);
       fixResultState.index++; // capturing group is not droped out
@@ -378,13 +376,13 @@ class QuantifiedGroup extends SyntaxTree {
 export class Root extends QuantifiedGroup {
   private nodesMapper: GroupsMapper;
   constructor(pattern: string) {
-    const patternState = new PatternState('(' + pattern + ')');
+    const patternState = new PatternState("(" + pattern + ")");
     const nodesMapper = new GroupsMapper(-1, 0);
     super(patternState, nodesMapper);
     this.nodesMapper = nodesMapper;
 
     if (patternState.cursor < patternState.pattern.length) {
-      throw new Error('Parentheses mismatch.');
+      throw new Error("Parentheses mismatch.");
     }
   }
 
@@ -397,7 +395,7 @@ export class Root extends QuantifiedGroup {
     xExecValue: IRegExactExecArray,
     optimization: boolean,
   ) {
-    xExecValue.splice(0, 1); // remove overall result as root group represents overall result and is going to be proccessed next
+    xExecValue.splice(0, 1); // rm overall result as root group already is overall result and will to be proccessed next
     super.fixResult(xExecValue, optimization, new FixResultState(0, xExecValue.index));
   }
 }
