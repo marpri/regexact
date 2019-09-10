@@ -1,19 +1,21 @@
 {
   "name": "regexact",
-  "version": "0.1.0",
-  "description": "RegExact is a RegExp extension that discovers indexes of substrings defined by capturing groups.",
+  "version": "0.2.0",
+  "description": "RegExact is a RegExp extension that discovers indexes of substrings defined by the regular expression capturing groups.",
   "license": "MIT",
-  "repository": "",
+  "repository": {
+    "type": "git",
+    "url": "https: //github.com/marpri/regexact.git"
+  },
   "author": {
-    "name": "Marko Privosnik"
+    "name": "Marko Privosnik",
+    "email": "marpridev@gmail.com"
   },
   "keywords": [
-    "Regex",
-    "RegExp",
+    "regex",
+    "regexp",
     "Regular Expression",
-    "Regular Expressions",
-    "Capturing Group",
-    "Capturing Groups"
+    "Capturing Group"
   ],
   "files": [
     "/lib"
@@ -21,31 +23,24 @@
   "main": "lib/index",
   "types": "lib/index",
   "scripts": {
-    "clean": "rimraf lib && rimraf coverage",
-    "format": "prettier --write \"{src,__tests__}/**/*.ts\" --single-quote --trailing-comma es5",
-    "lint": "tslint --force --format verbose \"src/**/*.ts\"",
+    "clean": "rimraf lib",
+    "lint": "tslint --format verbose \"src/**/*.ts\"",
     "prepublishOnly": "npm run build",
     "prebuild": "npm run clean && npm run lint && echo Using TypeScript && tsc --version",
-    "prebuild0": "npm run clean && npm run format && npm run lint && echo Using TypeScript && tsc --version",
     "build": "tsc --pretty",
     "test": "jest --no-cache",
-    "coverage": "jest --coverage",
     "watch": "npm run build -- --watch",
     "watch:test": "jest --watch"
   },
   "dependencies": {},
   "devDependencies": {
-    "@types/jest": "^23.3.14",
-    "@types/node": "^10.11.4",
-    "coveralls": "^3.0.2",
-    "jest": "^23.6.0",
-    "prettier": "^1.14.3",
-    "rimraf": "^2.6.2",
-    "ts-jest": "^23.10.5",
-    "ts-node": "^7.0.1",
-    "tslint": "^5.11.0",
-    "tslint-config-prettier": "^1.15.0",
-    "typescript": "^3.5.3"
+    "@types/jest": "^24.0.18",
+    "@types/node": "^12.7.4",
+    "rimraf": "^3.0.0",
+    "ts-jest": "^24.0.2",
+    "ts-node": "^8.3.0",
+    "tslint": "^5.20.0",
+    "typescript": "^3.6.2"
   },
   "engines": {
     "node": ">=10.0.0"
