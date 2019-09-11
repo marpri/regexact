@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.2.0] - 2019-09-11
 ### Added
-- Optimized mode of RegExact.exec() execution, which is also the default mode of execution. In the case of nested capturing groups the optimized execution can be many times faster.
+- Optimized mode of RegExact.exec() execution, which is also the default mode of execution. In the case of nested capturing groups, the optimized execution can be many times faster.
 ### Changed
 - Fix jest devDependency vulnerabilities.
 - Simplified testing code.
