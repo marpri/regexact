@@ -27,18 +27,6 @@
     },
     {
       "type": "npm",
-      "label": "format",
-      "script": "format",
-      "problemMatcher": []
-    },
-    {
-      "type": "npm",
-      "label": "coverage",
-      "script": "coverage",
-      "problemMatcher": []
-    },
-    {
-      "type": "npm",
       "label": "test",
       "script": "test",
       "group": {
