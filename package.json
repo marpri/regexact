@@ -1,7 +1,7 @@
 {
   "name": "regexact",
   "version": "0.2.0",
-  "description": "RegExact is a RegExp extension that discovers indexes of substrings defined by the regular expression capturing groups.",
+  "description": "RegExact extends RegExp to return indexes of matched substrings associated with capturing groups.",
   "license": "MIT",
   "repository": {
     "type": "git",
