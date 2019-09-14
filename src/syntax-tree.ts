@@ -4,7 +4,7 @@ import { IRegExactExecArray } from "./regexact";
 // tslint:disable-next-line: max-classes-per-file
 class PatternState {
   // represents input pattern string and the current position when constructing AST
-  constructor(public pattern: string, public cursor: number = 0) {}
+  constructor(public pattern: string, public cursor: number = 0) { }
   public get(): string {
     return this.pattern[this.cursor];
   }
@@ -17,12 +17,12 @@ class PatternState {
 export class GroupsMapper {
   // represents relation between (capturing) groups indexes in extended and unextended result
   public indexToXindex: Map<number, number> = new Map();
-  constructor(public index: number = 0, public xIndex: number = 0) {}
+  constructor(public index: number = 0, public xIndex: number = 0) { }
 }
 
 // tslint:disable-next-line: max-classes-per-file
 class FixResultState {
-  constructor(public index: number, public cursor: number) {}
+  constructor(public index: number, public cursor: number) { }
 }
 
 // tslint:disable-next-line: max-classes-per-file
@@ -46,7 +46,7 @@ export class SyntaxTree {
     _xExecValue: IRegExactExecArray, // tslint:disable-line: variable-name
     _optimization: boolean, // tslint:disable-line: variable-name
     _fixResultState: FixResultState, // tslint:disable-line: variable-name
-  ) {} // tslint:disable-line: no-empty
+  ) { } // tslint:disable-line: no-empty
 
   protected manageChild(child: SyntaxTree) {
     this.children.push(child);
@@ -100,13 +100,13 @@ class Disjunction extends SyntaxTree {
   ) {
     // manage children and siblings
     const cursorStart = fixResultState.cursor;
-    for (const child of this.children) {
-      if (!optimization || this.containsCapturingGroup || this.containsReference) {
+    if (!optimization || this.containsCapturingGroup || this.containsReference) {
+      for (const child of this.children) {
         fixResultState.cursor = cursorStart;
         child.fixResult(xExecValue, optimization, fixResultState);
-      } else {
-        xExecValue.splice(fixResultState.index, this.virtualCapturingGroupsCount);
       }
+    } else {
+      xExecValue.splice(fixResultState.index, this.virtualCapturingGroupsCount);
     }
   }
 }
@@ -142,12 +142,12 @@ class Alternative extends SyntaxTree {
     fixResultState: FixResultState,
   ) {
     // manage children and siblings
-    for (const child of this.children) {
-      if (!optimization || this.containsCapturingGroup || this.containsReference) {
+    if (!optimization || this.containsCapturingGroup || this.containsReference) {
+      for (const child of this.children) {
         child.fixResult(xExecValue, optimization, fixResultState);
-      } else {
-        xExecValue.splice(fixResultState.index, this.virtualCapturingGroupsCount);
       }
+    } else {
+      xExecValue.splice(fixResultState.index, this.virtualCapturingGroupsCount);
     }
   }
 }
@@ -337,8 +337,7 @@ class QuantifiedGroup extends SyntaxTree {
   ) {
     // manage quantified group
     const quantifiedGroupText =
-      xExecValue[fixResultState.index] !== undefined &&
-        xExecValue[fixResultState.index] !== null
+      xExecValue[fixResultState.index] !== undefined && xExecValue[fixResultState.index] !== null
         ? xExecValue[fixResultState.index]
         : "";
     xExecValue.splice(fixResultState.index, 1);
@@ -347,7 +346,7 @@ class QuantifiedGroup extends SyntaxTree {
       xExecValue[fixResultState.index] === undefined
         ? 0
         : xExecValue[fixResultState.index].length;
-    const capturingGroupIndex =
+    const capturingGroupIndex = // todo: move inside of next if block
       xExecValue[fixResultState.index] === undefined
         ? undefined
         : fixResultState.cursor +
@@ -358,15 +357,11 @@ class QuantifiedGroup extends SyntaxTree {
       // regular capturing group
       xExecValue.indexes.push(capturingGroupIndex);
       fixResultState.index++; // capturing group is not droped out
-    } else {
-      xExecValue.splice(fixResultState.index, 1);
     }
 
     // manage children and siblings
-    const rightSiblingCursor =
-      fixResultState.cursor + quantifiedGroupText.length;
-    fixResultState.cursor +=
-      quantifiedGroupText.length - capturingGroupTextLength;
+    const rightSiblingCursor = fixResultState.cursor + quantifiedGroupText.length;
+    fixResultState.cursor += quantifiedGroupText.length - capturingGroupTextLength;
     this.children[0].fixResult(xExecValue, optimization, fixResultState);
     fixResultState.cursor = rightSiblingCursor; // correct for right sibling
   }
