@@ -27,6 +27,17 @@
         "${relativeFile}"
       ],
       "cwd": "${workspaceRoot}"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug test regexact-spec.ts",
+      "program": "${workspaceRoot}/node_modules/jest/bin/jest.js",
+      "args": [
+        "--findRelatedTests",
+        "__tests__/regexact-spec.ts"
+      ],
+      "cwd": "${workspaceRoot}"
     }
   ]
 }
