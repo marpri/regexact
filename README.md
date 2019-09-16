@@ -24,6 +24,8 @@ if (matches) {
   for (let i = 0; i < matches.length; i++) {
     console.log(i + ': ' + matches[i] + ' at ' + matches.indexes[i])
   }
+} else {
+  console.log('No matches.')
 }
 
 // 0: Hello World at 17
@@ -43,6 +45,8 @@ if (matches) {
   for (let i = 0; i < matches.length; i++) {
     console.log(i + ': ' + matches[i] + ' at ' + matches.indexes[i]);
   }
+} else {
+  console.log('No matches.')
 }
 
 // 0: Hello World at 17
@@ -98,6 +102,8 @@ if (matches) {
   for (let i = 0; i < matches.length; i++) {
     console.log(i + ': ' + matches[i] + ' at ' + matches.indexes[i])
   }
+} else {
+  console.log('No matches.')
 }
 
 // 0: abcde at 0
@@ -117,6 +123,8 @@ if (matches) {
   for (let i = 0; i < matches.length; i++) {
     console.log(i + ': ' + matches[i] + ' at ' + matches.indexes[i])
   }
+} else {
+  console.log('No matches.')
 }
 
 // 0: a at 0
@@ -136,6 +144,8 @@ if (matches) {
   for (let i = 0; i < matches.length; i++) {
     console.log(i + ': ' + matches[i] + ' at ' + matches.indexes[i])
   }
+} else {
+  console.log('No matches.')
 }
 
 // 0: cde at 0
@@ -155,6 +165,8 @@ if (matches) {
   for (let i = 0; i < matches.length; i++) {
     console.log(i + ': ' + matches[i] + ' at ' + matches.indexes[i])
   }
+} else {
+  console.log('No matches.')
 }
 
 // 0: <name>0<Mark>31415 at 13
@@ -167,19 +179,23 @@ if (matches) {
 const RegExact = require('regexact').RegExact
 
 const text = ('123446789ab\t')
-const matches1 = new RegExact(/(.)(.)()()()()()()()()(.)\11/).exec(text)
-const matches2 = new RegExact(/(.)(.)\11/).exec(text)
+const matches1 = new RegExact(/(.)(.)()()()()()()()()(.)\11/).exec(text) // \11 is a group ref
+const matches2 = new RegExact(/(.)(.)\11/).exec(text) // \11 is the escape of a tab
 
 if (matches1) {
   for (let i = 0; i < matches1.length; i++) {
     console.log(i + ': ' + matches1[i] + ' at ' + matches1.indexes[i])
   }
+} else {
+  console.log('No matches.')
 }
 console.log()
 if (matches2) {
   for (let i = 0; i < matches2.length; i++) {
     console.log(i + ': ' + matches2[i] + ' at ' + matches2.indexes[i])
   }
+} else {
+  console.log('No matches.')
 }
 
 // 0: 2344 at 1
@@ -198,6 +214,27 @@ if (matches2) {
 // 0: ab    at 9
 // 1: a at 9
 // 2: b at 10
+```
+
+`RegExact` object with a negative lookbehind :
+
+```js
+const RegExact = require('regexact').RegExact
+
+const regExact = new RegExact(/(?<!\$|usd|\d|\.)(\d+)\.?(\d{1,2})?/i)
+const matches = regExact.exec('$1.23 eur108.00 USD0123 eur1999')
+
+if (matches) {
+  for (let i = 0; i < matches.length; i++) {
+    console.log(i + ': ' + matches[i] + ' at ' + matches.indexes[i])
+  }
+} else {
+  console.log('No matches.')
+}
+
+// 0: 108.00 at 9
+// 1: 108 at 9
+// 2: 00 at 13
 ```
 
 ## Credits
