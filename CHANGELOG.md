@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] - 2019-09-16
+### Added
+- Add more code examples in README.md.
+### Changed
+- Fix fixResult methods being too greedy in optimized mode of execution.
+- Fix repository url value in package.json.
+- Update description in README.md.
+- Change tslint configuration and update the code accordingly.
 
 ## [0.2.0] - 2019-09-11
 ### Added
