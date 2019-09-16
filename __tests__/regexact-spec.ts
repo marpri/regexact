@@ -38,18 +38,6 @@ function testingProcedure(
   }
 }
 
-describe("Simple regex with capturing groups on level 1.", () => {
-  test.each`
-      regexp                          | input                                            | isExecNull | group | execLen | groupText                  | groupIndex
-      ${/quick\s(brown).+?(jumps)/gi} | ${"The Quick Brown Fox Jumps Over The Lazy Dog"} | ${false}   | ${2}  | ${3}    | ${"Jumps"}                 | ${20}
-      ${/quick\s(brown).+?(jumps)/gi} | ${"The Quick Brown Fox Jumps Over The Lazy Dog"} | ${false}   | ${1}  | ${3}    | ${"Brown"}                 | ${10}
-      ${/quick\s(brown).+?(jumps)/gi} | ${"The Quick Brown Fox Jumps Over The Lazy Dog"} | ${false}   | ${0}  | ${3}    | ${"Quick Brown Fox Jumps"} | ${4}
-    `(
-    "$regexp on string $input should have $execLen matches and the match of group $group should be $groupText at index $groupIndex.",
-    testingProcedure,
-  );
-});
-
 describe("Simple successful regex capturing groups on level 1 mixed group types and alternation .", () => {
   test.each`
   regexp              | input         | isExecNull | group | execLen | groupText | groupIndex
