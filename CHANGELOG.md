@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Add more code examples in README.md.
 ### Changed
-- Fix fixResult methods being too greedy in optimized mode of execution.
+- Fix fixResult methods being too greedy in the optimized mode of execution.
 - Fix repository url value in package.json.
 - Update description in README.md.
 - Change tslint configuration and update the code accordingly.
