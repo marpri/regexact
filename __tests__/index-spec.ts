@@ -1,5 +1,5 @@
-import * as index from '../src/index';
+import * as index from "../src/index";
 
-test('Should have Regexact available', () => {
+test("Should have Regexact available", () => {
   expect(index.RegExact).toBeTruthy();
 });
