@@ -2,7 +2,7 @@
 
 [![MIT license](https://img.shields.io/github/license/marpri/regexact)](http://opensource.org/licenses/MIT)
 
-RegExact extends RegExp to return indexes of matched substrings associated with capturing groups.
+RegExact extends RegExp to return indexes of matched substrings related to capturing groups.
 
 ## Installation
 
@@ -60,17 +60,17 @@ The following table shows the results for the  upper code:
 | Variable | Value | Description |
 | -------- | ----- | ----------- |
 | `matches[0]` | "Hello World" | The string of the full match. |
-| `matches[1]` | "World" | The substring of the match associated with the first capturing group. |
-| `matches[2]` | "ld" | The substring of the match associated with the second capturing group. |
+| `matches[1]` | "World" | The substring of the match related to the first capturing group. |
+| `matches[2]` | "ld" | The substring of the match related to the second capturing group. |
 | `matches.indexes[0]` | 17 | The index of the full match. This is a duplicate of `index` |
-| `matches.indexes[1]` | 23 | The index of the match associated with the first capturing group |
-| `matches.indexes[1]` | 26 | The index of the match associated with the second capturing group |
+| `matches.indexes[1]` | 23 | The index of the match related to the first capturing group |
+| `matches.indexes[1]` | 26 | The index of the match related to the second capturing group |
 | `index` | 17 | The index of the full match.  This is a duplicate of `indexes[0]` |
 | `input` | "I wish you a big Hello World" | The string that was matched against.	|
 
 ## Motivation
 
-Javascript standard build-in class `RegExp` enables matching text with a regex pattern by discovering matched substring and its index. For capturing groups, `RegExp` only returns their matching substrings and has no support for obtaining indexes of these substrings. `RegExact` extends the `RegExp` functionality to return indexes of matched substrings associated with the regular expression capturing groups as well.
+Javascript standard build-in class `RegExp` enables matching text with a regex pattern by discovering matched substring and its index. For capturing groups, `RegExp` only returns their matching substrings and has no support for obtaining indexes of these substrings. `RegExact` extends the `RegExp` functionality to return indexes of matched substrings related to the regular expression capturing groups as well.
 
 ## RegExp Features Support
 
