@@ -1,6 +1,6 @@
 {
   "name": "regexact",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "RegExact extends RegExp to return indexes of matched substrings associated with capturing groups.",
   "license": "MIT",
   "repository": {

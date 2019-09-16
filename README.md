@@ -1,4 +1,4 @@
-# RegExact 0.2.1
+# RegExact 0.2.2
 
 [![MIT license](https://img.shields.io/github/license/marpri/regexact)](http://opensource.org/licenses/MIT)
 
