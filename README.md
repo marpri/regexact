@@ -68,7 +68,7 @@ The following table shows the results for the  upper code:
 | `matches.indexes[0]` | 5 | The index of the full match. This is a duplicate of `index`. |
 | `matches.indexes[1]` | 6 | The index of the match related to the first capturing group. |
 | `matches.indexes[2]` | 39 | The index of the match related to the second (nested) capturing group. |
-| `matches.indexes[3]` | 43 | The index of the match related to the second (double nested) capturing group. |
+| `matches.indexes[3]` | 43 | The index of the match related to the third (double nested) capturing group. |
 | `index` | 5 | The index of the full match.  This is a duplicate of `indexes[0]`. |
 | `input` | "Hello World. We are the World. You are the World. I am the World." | The string that was matched against.	|
 
@@ -100,7 +100,7 @@ Some execution time optimizations are already implemented, but there is still ro
 const RegExact = require('regexact').RegExact
 
 const regExact = new RegExact(/([a-z])*([a-z])/)
-const matches = regExact.exec('abcde12345')
+const matches = regExact.exec('abracadabra')
 
 if (matches) {
   for (let i = 0; i < matches.length; i++) {
@@ -110,9 +110,9 @@ if (matches) {
   console.log('No matches.')
 }
 
-// 0: abcde at 0
-// 1: d at 3
-// 2: e at 4
+// 0: abracadabra at 0
+// 1: r at 9
+// 2: a at 10
 ```
 
 `RegExact` object constructed from `RegExp` object with capturing groups that are lazy quantified with *? :
@@ -121,7 +121,7 @@ if (matches) {
 const RegExact = require('regexact').RegExact
 
 const regExact = new RegExact(new RegExp(/([a-z])*?([a-z])/))
-const matches = regExact.exec('abcde12345')
+const matches = regExact.exec('abracadabra')
 
 if (matches) {
   for (let i = 0; i < matches.length; i++) {
