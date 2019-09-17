@@ -2,7 +2,7 @@
 
 [![MIT license](https://img.shields.io/github/license/marpri/regexact)](http://opensource.org/licenses/MIT)
 
-RegExact extends RegExp to return indexes of matched substrings related to capturing groups.
+Get the position of any JS RegExp capturing group match.
 
 ## Installation
 
@@ -141,8 +141,8 @@ if (matches) {
 ```js
 const RegExact = require('regexact').RegExact
 
-const regExact = new RegExact(new RegExp('ab(c)|cd(e)', 'i'))
-const matches = regExact.exec('cde')
+const regExact = new RegExact(new RegExp('(.{7}(ra)|(ra).{7})', 'i'))
+const matches = regExact.exec('abracadabra')
 
 if (matches) {
   for (let i = 0; i < matches.length; i++) {
@@ -152,9 +152,10 @@ if (matches) {
   console.log('No matches.')
 }
 
-// 0: cde at 0
-// 1: undefined at undefined
-// 2: e at 2
+// 0: racadabra at 2
+// 1: racadabra at 2
+// 2: ra at 9
+// 3: undefined at undefined
 ```
 
 `RegExact` object with nested capturing and non-capturing groups and quantifiers :
