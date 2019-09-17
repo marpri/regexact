@@ -1,7 +1,7 @@
 {
   "name": "regexact",
   "version": "0.2.2",
-  "description": "Get position of any JS RegExp capturing group match.",
+  "description": "Get the position of any JS RegExp capturing group match.",
   "license": "MIT",
   "repository": {
     "type": "git",
