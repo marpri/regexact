@@ -61,14 +61,16 @@ The following table shows the results for the  upper code:
 
 | Variable | Value | Description |
 | -------- | ----- | ----------- |
-| `matches[0]` | "Hello World" | The string of the full match. |
-| `matches[1]` | "World" | The substring of the match related to the first capturing group. |
-| `matches[2]` | "ld" | The substring of the match related to the second capturing group. |
-| `matches.indexes[0]` | 17 | The index of the full match. This is a duplicate of `index`. |
-| `matches.indexes[1]` | 23 | The index of the match related to the first capturing group. |
-| `matches.indexes[1]` | 26 | The index of the match related to the second capturing group. |
-| `index` | 17 | The index of the full match.  This is a duplicate of `indexes[0]`. |
-| `input` | "I wish you a big Hello World" | The string that was matched against.	|
+| `matches[0]` | "  World. We are the World. You are the world. " | The string of the full match. |
+| `matches[1]` | "World. We are the World. You are the world." | The substring of the match related to the first capturing group. |
+| `matches[2]` | "the world" | The substring of the match related to the second (nested) capturing group. |
+| `matches[3]` | "world" | The substring of the match related to the third (double nested) capturing group. |
+| `matches.indexes[0]` | 5 | The index of the full match. This is a duplicate of `index`. |
+| `matches.indexes[1]` | 6 | The index of the match related to the first capturing group. |
+| `matches.indexes[2]` | 39 | The index of the match related to the second (nested) capturing group. |
+| `matches.indexes[3]` | 43 | The index of the match related to the second (double nested) capturing group. |
+| `index` | 5 | The index of the full match.  This is a duplicate of `indexes[0]`. |
+| `input` | "Hello World. We are the World. You are the World. I am the World." | The string that was matched against.	|
 
 ## Motivation
 
