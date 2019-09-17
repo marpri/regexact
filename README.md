@@ -17,8 +17,8 @@ To use the `RegExact` class in a JavaScript file:
 ```js
 const RegExact = require('regexact').RegExact
 
-const regExact = new RegExact(/Hello (.*(ld))/i)
-const matches = regExact.exec('I wish you a big Hello World')
+const regExact = new RegExact(/ (.* (the (.+))\.) /i)
+const matches = regExact.exec("Hello World. We are the World. You are the World. I am the World.")
 
 if (matches) {
   for (let i = 0; i < matches.length; i++) {
@@ -28,9 +28,10 @@ if (matches) {
   console.log('No matches.')
 }
 
-// 0: Hello World at 17
-// 1: World at 23
-// 2: ld at 26
+// 0:  World. We are the World. You are the world.  at 5
+// 1: World. We are the World. You are the world. at 6
+// 2: the world at 39
+// 3: world at 43
 ```
 
 To use the `RegExact` class in a TypeScript file:
@@ -38,20 +39,21 @@ To use the `RegExact` class in a TypeScript file:
 ```ts
 import { RegExact } from 'regexact';
 
-const regExact = new RegExact(/Hello (.*(ld))/i);
-const matches = regExact.exec('I wish you a big Hello World');
+const regExact = new RegExact(/ (.* (the (.+))\.) /i);
+const matches = regExact.exec("Hello World. We are the World. You are the World. I am the World.");
 
 if (matches) {
   for (let i = 0; i < matches.length; i++) {
     console.log(i + ': ' + matches[i] + ' at ' + matches.indexes[i]);
   }
 } else {
-  console.log('No matches.')
+  console.log('No matches.');
 }
 
-// 0: Hello World at 17
-// 1: World at 23
-// 2: ld at 26
+// 0:  World. We are the World. You are the world.  at 5
+// 1: World. We are the World. You are the world. at 6
+// 2: the world at 39
+// 3: world at 43
 ```
 `RegExact` acts as a wrapper around the built-in `RegExp` that redefines its constructor and its `exec` method. The redefined `exec()` method extends the original returned object with an array named `indexes`. The redefined returned object is therefore an array (plus original extra properties `index` and `input`) with a new extra property `indexes` which contains indexes of matches that are stored in the original returned array in the same order.
 
@@ -62,10 +64,10 @@ The following table shows the results for the  upper code:
 | `matches[0]` | "Hello World" | The string of the full match. |
 | `matches[1]` | "World" | The substring of the match related to the first capturing group. |
 | `matches[2]` | "ld" | The substring of the match related to the second capturing group. |
-| `matches.indexes[0]` | 17 | The index of the full match. This is a duplicate of `index` |
-| `matches.indexes[1]` | 23 | The index of the match related to the first capturing group |
-| `matches.indexes[1]` | 26 | The index of the match related to the second capturing group |
-| `index` | 17 | The index of the full match.  This is a duplicate of `indexes[0]` |
+| `matches.indexes[0]` | 17 | The index of the full match. This is a duplicate of `index`. |
+| `matches.indexes[1]` | 23 | The index of the match related to the first capturing group. |
+| `matches.indexes[1]` | 26 | The index of the match related to the second capturing group. |
+| `index` | 17 | The index of the full match.  This is a duplicate of `indexes[0]`. |
 | `input` | "I wish you a big Hello World" | The string that was matched against.	|
 
 ## Motivation
